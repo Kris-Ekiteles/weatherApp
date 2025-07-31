@@ -1,25 +1,44 @@
-import React from 'react'
-import "./Weather.css"
-import search_icon from '../assets/magnifying-glass-location-solid-full.svg'
+import React, { useEffect, useState } from "react";
+import "./Weather.css";
+import search_icon from "../assets/magnifying-glass-location-solid-full.svg";
 import cloud_icon from "../assets/cloud-solid-full.svg";
 import sun_icon from "../assets/sun-solid-full.svg";
 import humidity_icon from "../assets/temperature-half-solid-full.svg";
 import wind_icon from "../assets/wind-solid-full.svg";
 
 const Weather = () => {
-    const search= async (city)=>{
-       try {
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${
-          import.meta.env.REACT_APP_API_KEY}`;
-          const response=await fetch(url);
-          const data = await response.json();
+  const [weatherData, setWeatherData] = useState(false);
+  const allIcons = {
+    "01d": cloud_icon,
+    "01n": wind_icon,
+    "02d": sun_icon,
+  };
 
-          console.log(data);
-        
-       } catch (error) {
-        
-       }
-    }
+  const search = async (city) => {
+    try {
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${
+        import.meta.env.REACT_APP_API_KEY
+      }`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      console.log(data);
+
+      const icon = allIcons[data.weather[0].icon] || humidity_icon;
+
+      setWeatherData({
+        humidity: data.main.humidity,
+        windSpeed: data.wind.speed,
+        temperature: Math.floor(data.main.temp),
+        location: data.name,
+        icon: icon,
+      });
+    } catch (error) {}
+  };
+  useEffect(() => {
+    search("New York");
+  }, []);
   return (
     <div className="weather">
       <div className="search-bar">
@@ -28,29 +47,27 @@ const Weather = () => {
       </div>
       <img src={cloud_icon} alt="" className="weather-icon" />
       <p className="temperature">
-        16 <sup>o</sup> c
+        {weatherData.temperature} <sup>o</sup> c
       </p>
-      <p className="location">London</p>
+      <p className="location">{weatherData.location}</p>
       <div className="weather-data">
         <div className="col">
-         
           <img src={humidity_icon} alt="" />
           <div>
-            <p>91 %</p>
+            <p>{weatherData.humidity} %</p>
             <span>Humidity</span>
           </div>
         </div>
         <div className="col">
-          
           <img src={wind_icon} alt="" />
           <div>
-            <p>3.6 km/h</p>
+            <p>{weatherData.windSpeed} km/h</p>
             <span>wind speed</span>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
-export default Weather
+export default Weather;
