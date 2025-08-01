@@ -17,7 +17,7 @@ const Weather = () => {
     loading:true
   });
 
-  const[city, setCity]=useState("New York");
+  const[city, setCity]=useState("Nairobi");
 
   const allIcons = {
     "01d": cloud_icon,
